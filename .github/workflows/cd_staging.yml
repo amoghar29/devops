@@ -1,0 +1,48 @@
+name: Deploy to Staging (EC2)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_to_ec2:
+    runs-on: ubuntu-latest
+    name: Deploying to EC2 Staging
+
+    steps:
+      - name: Setup SSH Key & Known Hosts
+        run: |
+          echo "${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}" > ~/ec2_ssh_key
+          chmod 600 ~/ec2_ssh_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/ec2_ssh_key -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+            set -e  # Stop execution on error
+
+            echo "Navigating to project directory..."
+            cd ~/devops
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Setting up environment..."
+            export PATH=$HOME/.nvm/versions/node/v22.13.1/bin:$PATH
+
+            echo "Installing dependencies..."
+            npm install -g pnpm
+            pnpm install
+
+            echo "Building project..."
+            pnpm run build
+
+            echo "Restarting services..."
+            
+            pm2 restart http
+            pm2 restart ws
+
+            echo "Deployment completed successfully!"
+          EOF
