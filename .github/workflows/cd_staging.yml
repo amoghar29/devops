@@ -30,7 +30,7 @@ jobs:
             git pull origin main
 
             echo "Setting up environment..."
-            export PATH=$HOME/.nvm/versions/node/v22.13.1/bin:$PATH
+            export export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
             echo "Installing dependencies..."
             npm install -g pnpm
