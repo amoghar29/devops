@@ -30,7 +30,9 @@ jobs:
             git pull origin main
 
             echo "Setting up environment..."
-            export export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH="$NVM_DIR/versions/node/v$(node -v)/bin:$PATH"
 
             echo "Installing dependencies..."
             npm install -g pnpm
@@ -40,7 +42,6 @@ jobs:
             pnpm run build
 
             echo "Restarting services..."
-            
             pm2 restart http
             pm2 restart ws
 
