@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("HI there");
+  res.send("HI there from ec2 staging");
 });
 
 // app.post("/", async (req, res) => {
